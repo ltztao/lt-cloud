@@ -1,0 +1,6 @@
+spring:
+  cloud:
+    nacos:
+      config:
+        # 关闭nacos配置中心
+        enabled: false

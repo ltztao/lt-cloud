@@ -1,0 +1,11 @@
+
+server:
+  port: 8812
+
+spring:
+  application:
+    name: lt-cloud-base
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848

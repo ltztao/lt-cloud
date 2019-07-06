@@ -1,0 +1,88 @@
+server:
+  port: 8810
+
+spring:
+  application:
+    name: lt-cloud-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+    gateway:
+      discovery:
+        locator:
+          #是否与服务注册于发现组件进行结合，通过 serviceId 转发到具体的服务实例
+          #默认为false，设为true便开启通过服务中心的自动根据 serviceId 创建路由的功能
+          #其中微服务应用名默认大写访问
+          enabled: true
+          lowerCaseServiceId: true
+      routes:
+        - id: lt-cloud-auth
+          #下游服务地址
+          uri: lb://lt-cloud-auth
+          order: 0
+          #网关断言匹配
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            #熔断过滤器
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/authfallback
+            - StripPrefix=2
+        - id: lt-cloud-base
+          #下游服务地址
+          uri: lb://lt-cloud-base
+          order: 1
+          #网关断言匹配
+          predicates:
+            - Path=/api/base/**
+          filters:
+            #熔断过滤器
+            - name: Hystrix
+              args:
+                name: fallbackcmd
+                fallbackUri: forward:/basefallback
+            - StripPrefix=2
+
+#请求和响应GZIP压缩支持
+feign:
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
+  compression:
+    request:
+      enabled: true
+      mime-types: text/xml,application/xml,application/json
+      min-request-size: 2048
+    response:
+      enabled: true
+
+
+#熔断器配置
+hystrix:
+  threadpool:
+    default:
+      coreSize: 1000 ##并发执行的最大线程数，默认10
+      maxQueueSize: 1000 ##BlockingQueue的最大队列数
+      queueSizeRejectionThreshold: 500 ##即使maxQueueSize没有达到，达到queueSizeRejectionThreshold该值后，请求也会被拒绝
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 10000
+
+#ribbon的超时时间
+ribbon:
+  ReadTimeout: 10000
+  ConnectTimeout: 10000
+
+auth:
+  #不进行token拦截
+  skip:
+    urls: /api/auth/user/login,/api/auth/user/token/refresh

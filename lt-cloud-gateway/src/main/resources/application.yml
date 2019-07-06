@@ -1,0 +1,7 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  profiles:
+    active: @package.environment@
+logging:
+  config: classpath:logback.xml
