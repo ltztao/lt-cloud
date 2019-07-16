@@ -81,6 +81,19 @@ hystrix:
 ribbon:
   ReadTimeout: 10000
   ConnectTimeout: 10000
+  MaxAutoRetries: 1
+  MaxAutoRetriesNextServer: 2
+  eureka:
+    enabled: true
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 600000
 
 auth:
   #不进行token拦截
