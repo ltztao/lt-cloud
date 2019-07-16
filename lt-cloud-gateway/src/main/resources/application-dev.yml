@@ -83,8 +83,6 @@ ribbon:
   ConnectTimeout: 10000
   MaxAutoRetries: 1
   MaxAutoRetriesNextServer: 2
-  eureka:
-    enabled: true
 hystrix:
   command:
     default:
